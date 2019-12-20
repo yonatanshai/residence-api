@@ -1,6 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
 const usersRoutes = require('./routes/users');
+
 
 const app = express()
 const port = process.env.PORT || 3000;
@@ -16,5 +20,9 @@ app.use((req, res, next) => {
 
 app.use('/api/users', usersRoutes);
 
-app.get('/', (req, res) => res.send('Hello World!'))
-app.listen(port, () => console.log(`Example app listening on port port!`))
+mongoose
+    .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-ngxlm.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
+    .then(() => app.listen(port, () => console.log(`Server running on port ${port}`)))
+    .catch(err => console.log(err));
+
+
