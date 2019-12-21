@@ -5,17 +5,17 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../../models/user');
 
-beforeAll(async (done) => {
-    // jest.setTimeout = 30000;
+// beforeAll(async (done) => {
+//     // jest.setTimeout = 30000;
 
-    await mongoose.connect(`mongodb://127.0.0.1/ResidenceTest`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
+//     await mongoose.connect(`mongodb://127.0.0.1/ResidenceTest`, {
+//         useNewUrlParser: true,
+//         useUnifiedTopology: true
+//     });
 
-    done();
+//     done();
 
-})
+// })
 
 const userOne = {
     name: 'Test User',

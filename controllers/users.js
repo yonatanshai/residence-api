@@ -38,7 +38,8 @@ const createUser = async (req, res, next) => {
         const createdUser = new User({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            groups: []
         });
 
         try {
@@ -83,8 +84,6 @@ const login = async (req, res, next) => {
     try {
         existingUser = await User.findOne({ email });
     } catch (error) {
-        // console.log(('*****on User.find'));
-        // return next(new HttpError('Error logging in', 500));
         return res.status(500).send({message: 'error logging in'});
     }
 
@@ -96,14 +95,10 @@ const login = async (req, res, next) => {
     try {
         isPasswordValid = await bcrypt.compare(password, existingUser.password)
     } catch (error) {
-        // console.log('_____on validating password ' + error);
-        // return next(new HttpError('Error logging in', 500));
         return res.status(500).send({message: 'error logging in'});
     }
 
     if (!isPasswordValid) {
-        // console.log('======wrong password');
-        // return next(new HttpError('Wrong email or password', 401))
         return res.status(401).send({message: 'wrong email or password'})
     }
 
@@ -120,8 +115,6 @@ const login = async (req, res, next) => {
             }
         )
     } catch (error) {
-        // console.log('++++++on creating token');
-        // return next(new HttpError('Error logging in', 500));
         return res.status(500).send({message: 'error logging in'});
 
     }
