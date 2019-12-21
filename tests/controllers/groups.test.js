@@ -35,9 +35,10 @@ beforeEach(async (done) => {
 })
 
 describe('Groups', () => {
-    test('should create a group', async (done) => {
+    test('should create a group by a user', async (done) => {
+        console.log(userOne);
         const response = await request(app)
-        .post(`/groups/${userOne.id}`)
+        .post(`/groups/user/${userOne.id}`)
         .send({
             name: 'test group',
             description: 'Test description'

@@ -18,6 +18,7 @@ const User = require('../../models/user');
 // })
 
 const userOne = {
+    _id: new mongoose.Types.ObjectId(),
     name: 'Test User',
     email: 'test@test.com',
     password: '12345678'
@@ -32,6 +33,7 @@ const userTwo = {
 beforeEach(async (done) => {
     await User.deleteMany();
     const hashedPassword = await bcrypt.hash(userOne.password, 12);
+
     await new User({
         ...userOne,
         password: hashedPassword
@@ -62,7 +64,7 @@ describe('#Users', () => {
             .get('/users')
             .expect(200);
 
-        expect(response.body.users.length).toBe(1);
+        expect(response.body.users.length).toBeDefined();
         done();
     });
 
@@ -99,6 +101,20 @@ describe('#Users', () => {
         expect(response.body.password).toBeFalsy()
         done();
     })
+
+    test('should return a user by its ID', async (done) => {
+        const res = await request(app)
+            .post('/users/signup')
+            .send({
+                name: 'Test User',
+                email: 'test10@test.com',
+                password: '12345678'
+            })
+            .expect(201);
+        await request(app)
+            .get(`/users/${res.body.id}`)
+            .expect(200)
+    });
 
 
 });

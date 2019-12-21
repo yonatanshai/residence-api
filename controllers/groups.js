@@ -24,7 +24,6 @@ const getGroupsByUserId = async (req, res) => {
 
 const createGroup = async (req, res) => {
     const userId = req.params.uid;
-
     const { name, description } = req.body;
 
     const createdGroup = new Group({
@@ -42,8 +41,13 @@ const createGroup = async (req, res) => {
     let user;
     try {
         // user = await User.findById(req.userData.userId);
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            console.log('invalid id');
+        }
         user = await User.findById(userId);
+        
     } catch (error) {
+        console.log(error.message);
         return res.status(500).send({ message: error.message });
     }
 
@@ -59,6 +63,7 @@ const createGroup = async (req, res) => {
         await user.save({ session });
         await session.commitTransaction();
     } catch (error) {
+        console.log(error.message);
         return res.status(500).send({ message: error.message});
     }
 
