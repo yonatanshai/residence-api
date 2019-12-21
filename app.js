@@ -1,10 +1,10 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
-
+const HttpError = require('./models/http-error');
 const usersRoutes = require('./routes/users');
 
 
-const app = express()
+const app = express();
 
 
 app.use(bodyParser.json());
@@ -18,17 +18,15 @@ app.use((req, res, next) => {
 
 app.use('/users', usersRoutes);
 
-app.use((req, res, next) => {
+app.use(() => {
     throw new HttpError('Could not find this route', 404);
-})
+});
 
-app.use((error, req, res, next) => {
+app.use((error, req, res) => {
+    console.log(error);
     res.status(error.code || 500);
     res.json({ message: error.message || 'An unknown error occurred' });
-})
-
+});
 
 
 module.exports = app;
-
-

@@ -23,6 +23,7 @@ const createUser = async (req, res, next) => {
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            
             return next(new HttpError('Error signing up: a user with this email already exists', 422));
         }
 
@@ -30,6 +31,7 @@ const createUser = async (req, res, next) => {
         try {
             hashedPassword = await bcrypt.hash(password, 12);
         } catch (error) {
+            
             return next(new HttpError('Error signing up', 500));
         }
 
@@ -59,6 +61,7 @@ const createUser = async (req, res, next) => {
                 }
             )
         } catch (error) {
+            console.log('here');
             return next(new HttpError('Error signing up', 500));
         }
 
@@ -80,26 +83,28 @@ const login = async (req, res, next) => {
     try {
         existingUser = await User.findOne({ email });
     } catch (error) {
-        console.log(('on User.find'));
-        return next(new HttpError('Error logging in', 500));
+        // console.log(('*****on User.find'));
+        // return next(new HttpError('Error logging in', 500));
+        return res.status(500).send({message: 'error logging in'});
     }
 
     if (!existingUser) {
-        console.log('user not found');
-        return next(new HttpError('Wrong email or password', 401))
+        return res.status(401).send({message: 'wrong email or password'})
     }
 
     let isPasswordValid = false;
     try {
         isPasswordValid = await bcrypt.compare(password, existingUser.password)
     } catch (error) {
-        console.log('on validating password ' + error);
-        return next(new HttpError('Error logging in', 500));
+        // console.log('_____on validating password ' + error);
+        // return next(new HttpError('Error logging in', 500));
+        return res.status(500).send({message: 'error logging in'});
     }
 
     if (!isPasswordValid) {
-        console.log('wrong password');
-        return next(new HttpError('Wrong email or password', 401))
+        // console.log('======wrong password');
+        // return next(new HttpError('Wrong email or password', 401))
+        return res.status(401).send({message: 'wrong email or password'})
     }
 
     let token;
@@ -115,8 +120,10 @@ const login = async (req, res, next) => {
             }
         )
     } catch (error) {
-        console.log('on creating token');
-        return next(new HttpError('Error logging in', 500));
+        // console.log('++++++on creating token');
+        // return next(new HttpError('Error logging in', 500));
+        return res.status(500).send({message: 'error logging in'});
+
     }
 
     res.json({

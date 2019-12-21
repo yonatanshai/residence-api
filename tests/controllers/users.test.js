@@ -2,15 +2,18 @@
 const request = require('supertest');
 const app = require('../../app');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../../models/user');
 
-beforeAll(async () => {
+beforeAll(async (done) => {
     // jest.setTimeout = 30000;
 
     await mongoose.connect(`mongodb://127.0.0.1/ResidenceTest`, {
         useNewUrlParser: true,
         useUnifiedTopology: true
     });
+
+    done();
 
 })
 
@@ -26,24 +29,29 @@ const userTwo = {
     password: '12345678'
 }
 
-beforeEach(async () => {
+beforeEach(async (done) => {
     await User.deleteMany();
-    await new User(userOne).save();
+    const hashedPassword = await bcrypt.hash(userOne.password, 12);
+    await new User({
+        ...userOne,
+        password: hashedPassword
+    }).save();
+    done();
 })
 
-describe('Users CRUD', () => {
+describe('#Users', () => {
     test('Should signup a new user', async (done) => {
         const response = await request(app)
             .post('/users/signup')
             .send(userTwo)
             .expect(201)
-            done();
+        done();
     });
 
     test('Should return a token when signing up a new user', async (done) => {
         const response = await request(app)
-        .post('/users/signup')
-        .send(userTwo)
+            .post('/users/signup')
+            .send(userTwo)
 
         expect(response.body.token).toBeDefined();
         done();
@@ -54,7 +62,7 @@ describe('Users CRUD', () => {
             .get('/users')
             .expect(200);
 
-            expect(response.body.users.length).toBe(1);
+        expect(response.body.users.length).toBe(1);
         done();
     });
 
@@ -66,31 +74,31 @@ describe('Users CRUD', () => {
                 password: userOne.password,
             })
             .expect(200)
-            done();
+        done();
     });
 
     test('should fail to login with wrong password', async (done) => {
         await request(app)
-        .post('/users/login')
-        .send({
-            email: 'test@test.com',
-            password: '12345677'
-        })
-        .expect(401);
+            .post('/users/login')
+            .send({
+                email: userOne.email,
+                password: userOne.password + '1'
+            })
+            .expect(401);
         done();
     });
 
-    test('should not return the password on login', async(done) => {
+    test('should not return the password on login', async (done) => {
         const response = await request(app)
-        .post('/users/login')
-        .send({
-            email: userOne.email,
-            password: userOne.password
-        })
+            .post('/users/login')
+            .send({
+                email: 'test@test.com',
+                password: '12345678'
+            })
 
         expect(response.body.password).toBeFalsy()
         done();
     })
 
-    
+
 });
