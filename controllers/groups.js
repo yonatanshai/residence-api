@@ -23,9 +23,10 @@ const getGroupsByUserId = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
+    console.log('crateGroup Called ' + {body: req.body, params: req.params});
     const userId = req.params.uid;
     const { name, description } = req.body;
-
+    
     const createdGroup = new Group({
         name,
         description,

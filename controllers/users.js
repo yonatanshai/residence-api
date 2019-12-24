@@ -33,12 +33,13 @@ const getUserById = async(req, res, next) => {
 }
 
 const createUser = async (req, res, next) => {
+    
     const { name, email, password } = req.body;
+    console.log(`createUser called with ${name} ${email} ${password}`);
 
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            
             return next(new HttpError('Error signing up: a user with this email already exists', 422));
         }
 
@@ -46,7 +47,7 @@ const createUser = async (req, res, next) => {
         try {
             hashedPassword = await bcrypt.hash(password, 12);
         } catch (error) {
-            
+            console.log('error hashing');
             return next(new HttpError('Error signing up', 500));
         }
 
@@ -77,7 +78,7 @@ const createUser = async (req, res, next) => {
                 }
             )
         } catch (error) {
-            console.log('here');
+            console.log('error signing up');
             return next(new HttpError('Error signing up', 500));
         }
 

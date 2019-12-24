@@ -1,9 +1,10 @@
 
 const request = require('supertest');
-const app = require('../../app');
+const app = require('../app');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('../../models/user');
+const User = require('../models/user');
+const { userOne, userOneId, setupDb } = require('./fixtures/db');
 
 // beforeAll(async (done) => {
 //     // jest.setTimeout = 30000;
@@ -17,35 +18,43 @@ const User = require('../../models/user');
 
 // })
 
-const userOne = {
-    _id: new mongoose.Types.ObjectId(),
-    name: 'Test User',
-    email: 'test@test.com',
-    password: '12345678'
-}
+// const userOne = {
+//     _id: new mongoose.Types.ObjectId(),
+//     name: 'Test User',
+//     email: 'test@test.com',
+//     password: '12345678'
+// }
 
-const userTwo = {
-    name: 'Test User',
-    email: 'test2@test.com',
-    password: '12345678'
-}
+// const userTwo = {
+//     name: 'Test User',
+//     email: 'test2@test.com',
+//     password: '12345678'
+// }
 
-beforeEach(async (done) => {
-    await User.deleteMany();
-    const hashedPassword = await bcrypt.hash(userOne.password, 12);
+// beforeEach(async (done) => {
+//     await User.deleteMany();
+//     const hashedPassword = await bcrypt.hash(userOne.password, 12);
 
-    await new User({
-        ...userOne,
-        password: hashedPassword
-    }).save();
-    done();
-})
+//     await new User({
+//         ...userOne,
+//         password: hashedPassword
+//     }).save();
+//     done();
+// })
+// beforeAll(async () => await User.deleteMany());
 
-describe('#Users', () => {
+beforeEach(setupDb);
+
+describe('# Users', () => {
     test('Should signup a new user', async (done) => {
+        console.log(userOne);
         const response = await request(app)
             .post('/users/signup')
-            .send(userTwo)
+            .send({
+                name: 'test2',
+                email: 'test@email.com',
+                password: '12345678'
+            })
             .expect(201)
         done();
     });
@@ -53,7 +62,11 @@ describe('#Users', () => {
     test('Should return a token when signing up a new user', async (done) => {
         const response = await request(app)
             .post('/users/signup')
-            .send(userTwo)
+            .send({
+                name: 'test2',
+                email: 'test@email.com',
+                password: '12345678'
+            })
 
         expect(response.body.token).toBeDefined();
         done();
@@ -68,16 +81,17 @@ describe('#Users', () => {
         done();
     });
 
-    test('should login an existing user', async (done) => {
-        await request(app)
-            .post('/users/login')
-            .send({
-                email: userOne.email,
-                password: userOne.password,
-            })
-            .expect(200)
-        done();
-    });
+    // test('should login an existing user', async (done) => {
+    //     const userOneHashedPassword = await bcrypt.hash(userOne.password, 12);
+    //     await request(app)
+    //         .post('/users/login')
+    //         .send({
+    //             email: userOne.email,
+    //             password: userOneHashedPassword,
+    //         })
+    //         .expect(200)
+    //     done();
+    // });
 
     test('should fail to login with wrong password', async (done) => {
         await request(app)
@@ -103,17 +117,11 @@ describe('#Users', () => {
     })
 
     test('should return a user by its ID', async (done) => {
-        const res = await request(app)
-            .post('/users/signup')
-            .send({
-                name: 'Test User',
-                email: 'test10@test.com',
-                password: '12345678'
-            })
-            .expect(201);
         await request(app)
-            .get(`/users/${res.body.id}`)
+            .get(`/users/${userOneId}`)
             .expect(200)
+
+        done();
     });
 
 
