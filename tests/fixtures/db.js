@@ -5,6 +5,7 @@ const Group = require('../../models/group');
 const User = require('../../models/user');
 
 const userOneId = new mongoose.Types.ObjectId();
+const groupOneId = new mongoose.Types.ObjectId();
 const userOneHashedPassword = bcrypt.hashSync('12345678', 12);
 let userOne = {
     _id: userOneId,
@@ -14,8 +15,12 @@ let userOne = {
 };
 
 const groupOne = {
+    _id: groupOneId,
     name: 'test group',
     createdAt: new Date(),
+    creator: userOneId,
+    admins: [userOneId],
+    members: [userOneId]
 }
 
 
@@ -23,25 +28,15 @@ const setupDb = async () => {
     await User.deleteMany();
     await Group.deleteMany();
 
-
-    // const hashedPassword = await bcrypt.hash(userOne.password, 12);
-    // userOne = await new User({
-    //     ...userOne,
-    //     password: hashedPassword
-    // }).save();
     await new User(userOne).save();
 
-    await new Group({
-        ...groupOne,
-        creator: userOneId,
-        admins: [userOneId],
-        members: [userOneId]
-    }).save();
+    await new Group(groupOne).save();
 }
 
 module.exports = {
     userOne,
     groupOne,
     setupDb,
-    userOneId
+    userOneId,
+    groupOneId
 };

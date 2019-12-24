@@ -4,6 +4,23 @@ const mongoose = require('mongoose');
 const User = require('../models/user');
 const Group = require('../models/group');
 
+const getGroupById = async (req, res) => {
+    const groupId = req.params.gid;
+
+    let group;
+    try {
+        group = await Group.findById(groupId);
+    } catch (error) {
+        return res.status(500).send({message: 'Error fetching a group'});
+    }
+
+    if (!group) {
+        return res.status(404).send({message: 'Group not found'});
+    }
+
+    return res.json({group: group.toObject({getters: true})});
+}
+
 const getGroupsByUserId = async (req, res) => {
     console.log('getByIdCalled');
     const userId = req.params.uid;
@@ -16,7 +33,7 @@ const getGroupsByUserId = async (req, res) => {
     }
 
     if (!userWithGroups.groups) {
-        return res.status(404).send({message: 'not found'});
+        return res.status(404).send({message: 'groups not found'});
     }
 
     return res.json({ groups: userWithGroups.groups.map(g => g.toObject({ getters: true })) });
@@ -74,5 +91,6 @@ const createGroup = async (req, res) => {
 
 module.exports = {
     getGroupsByUserId,
-    createGroup
+    createGroup,
+    getGroupById
 }
