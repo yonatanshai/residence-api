@@ -1,4 +1,4 @@
-
+const { validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
@@ -17,28 +17,31 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 
-const getUserById = async(req, res, next) => {
+const getUserById = async (req, res, next) => {
     const userId = req.params.uid;
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).send({message: 'User not found'});
+            return res.status(404).send({ message: 'User not found' });
         }
 
-        return res.json({user});
+        return res.json({ user });
     } catch (error) {
-        return res.status(500).send({message: error.message});
+        return res.status(500).send({ message: error.message });
     }
 }
 
 const createUser = async (req, res, next) => {
-    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).send({ error: 'Invalid input' })
+    }
     const { name, email, password } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return next(new HttpError('Error signing up: a user with this email already exists', 422));
+            return res.status(422).send({ error: 'Error signing up: a user with this email already exists' });
         }
 
         let hashedPassword;
@@ -46,7 +49,7 @@ const createUser = async (req, res, next) => {
             hashedPassword = await bcrypt.hash(password, 12);
         } catch (error) {
             console.log('error hashing');
-            return next(new HttpError('Error signing up', 500));
+            return res.status(500).send({ error: 'Error signing up' });
         }
 
         const createdUser = new User({
@@ -60,7 +63,7 @@ const createUser = async (req, res, next) => {
             await createdUser.save();
         } catch (error) {
             console.log('error saving user ' + error.message);
-            return next(new HttpError('Error creating user', 500));
+            return res.status(500).send({ error: 'Error signing up' });
         }
 
         let token;
@@ -77,7 +80,7 @@ const createUser = async (req, res, next) => {
             )
         } catch (error) {
             console.log('error signing up');
-            return next(new HttpError('Error signing up', 500));
+            return res.status(500).send({ error: 'Error signing up' });
         }
 
         res.status(201).json({
@@ -87,7 +90,7 @@ const createUser = async (req, res, next) => {
         });
     } catch (error) {
         console.log('error saving user ' + error.message);
-        return next(new HttpError('Error creating user', 500));
+        return res.status(500).send({ error: 'Error signing up' });
     }
 }
 
@@ -98,22 +101,22 @@ const login = async (req, res, next) => {
     try {
         existingUser = await User.findOne({ email });
     } catch (error) {
-        return res.status(500).send({message: 'error logging in'});
+        return res.status(500).send({ message: 'error logging in' });
     }
 
     if (!existingUser) {
-        return res.status(401).send({message: 'wrong email or password'})
+        return res.status(401).send({ message: 'wrong email or password' })
     }
 
     let isPasswordValid = false;
     try {
         isPasswordValid = await bcrypt.compare(password, existingUser.password)
     } catch (error) {
-        return res.status(500).send({message: 'error logging in'});
+        return res.status(500).send({ message: 'error logging in' });
     }
 
     if (!isPasswordValid) {
-        return res.status(401).send({message: 'wrong email or password'})
+        return res.status(401).send({ message: 'wrong email or password' })
     }
 
     let token;
@@ -129,7 +132,7 @@ const login = async (req, res, next) => {
             }
         )
     } catch (error) {
-        return res.status(500).send({message: 'error logging in'});
+        return res.status(500).send({ message: 'error logging in' });
 
     }
 

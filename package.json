@@ -8,8 +8,10 @@
     "body-parser": "^1.19.0",
     "env-cmd": "^10.0.1",
     "express": "^4.17.1",
+    "express-validator": "^6.3.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.8.1"
+    "mongoose": "^5.8.1",
+    "validator": "^12.1.0"
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^1.1.3",
