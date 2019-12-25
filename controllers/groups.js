@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 
 const User = require('../models/user');
@@ -22,7 +21,6 @@ const getGroupById = async (req, res) => {
 }
 
 const getGroupsByUserId = async (req, res) => {
-    console.log('getByIdCalled');
     const userId = req.params.uid;
 
     let userWithGroups;
@@ -40,30 +38,21 @@ const getGroupsByUserId = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
-    console.log('crateGroup Called ' + {body: req.body, params: req.params});
-    const userId = req.params.uid;
+    const userId = req.userData.userId;
     const { name, description } = req.body;
     
     const createdGroup = new Group({
         name,
         description,
         createdAt: new Date().getMilliseconds(),
-        // creator: req.userData.userId,
         creator: userId,
-        // admins: [req.userData.userId],
         admins: [userId],
-        // members: [req.userData.userId]
         members: [userId]
     })
 
     let user;
     try {
-        // user = await User.findById(req.userData.userId);
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            console.log('invalid id');
-        }
         user = await User.findById(userId);
-        
     } catch (error) {
         console.log(error.message);
         return res.status(500).send({ message: error.message });

@@ -20,7 +20,6 @@ const getAllUsers = async (req, res, next) => {
 const getUserById = async(req, res, next) => {
     const userId = req.params.uid;
     try {
-        console.log(mongoose.Types.ObjectId.isValid(userId));
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).send({message: 'User not found'});
@@ -35,7 +34,6 @@ const getUserById = async(req, res, next) => {
 const createUser = async (req, res, next) => {
     
     const { name, email, password } = req.body;
-    console.log(`createUser called with ${name} ${email} ${password}`);
 
     try {
         const existingUser = await User.findOne({ email });

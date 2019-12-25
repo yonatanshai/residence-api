@@ -1,16 +1,17 @@
 const HttpError = require('../Models/http-error');
 const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     if (req.method === 'OPTIONS') {
         return next();
     }
     try {
         const token = req.headers.authorization.split(' ')[1];
-        
+
         if (!token) {
             console.log('token not found');
-            throw new Error('Authentication failed');
+            throw new Error('Authentication required');
         }
         const decodedToken = jwt.verify(token, process.env.JWT_KEY);
         req.userData = {
@@ -19,6 +20,6 @@ module.exports = (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
-        return next(new HttpError('Authentication failed', 403));
+        res.status(403).send({ error: 'Authentication required' });
     }
 };

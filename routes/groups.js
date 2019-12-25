@@ -5,9 +5,9 @@ const checkAuth = require('../middleware/check-auth');
 
 // router.use(checkAuth);
 
-router.get('/:gid', groupsController.getGroupById);
-router.get('/user/:uid', groupsController.getGroupsByUserId);
-router.post('/:uid', groupsController.createGroup);
+router.get('/:gid', checkAuth ,groupsController.getGroupById);
+router.get('/users/:uid', checkAuth, groupsController.getGroupsByUserId);
+router.post('/', checkAuth, groupsController.createGroup);
 
 router.patch('/', () => {
 

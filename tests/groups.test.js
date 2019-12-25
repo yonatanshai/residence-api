@@ -12,7 +12,8 @@ beforeEach(setupDb);
 describe('Groups', () => {
     test('should create a group by a user', async (done) => {
         const response = await request(app)
-            .post(`/groups/${userOneId}`)
+            .post(`/groups/`)
+            .set('Authorization', `Bearer ${userOne.token}`)
             .send({
                 name: 'test group',
                 description: 'Test description'
@@ -24,6 +25,7 @@ describe('Groups', () => {
     test('should return a group by its id', async (done) => {
         const response = await request(app)
             .get(`/groups/${groupOneId}`)
+            .set('Authorization', `Bearer ${userOne.token}`)
             .expect(200);
 
         const group = response.body.group;
@@ -34,7 +36,8 @@ describe('Groups', () => {
 
     test('should return a group given a user id', async (done) => {
         await request(app)
-            .get(`/groups/user/${userOneId}`)
+            .get(`/groups/users/${userOneId}`)
+            .set('Authorization', `Bearer ${userOne.token}`)
             .expect(200)
 
         done();

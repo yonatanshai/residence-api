@@ -6,48 +6,11 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { userOne, userOneId, setupDb } = require('./fixtures/db');
 
-// beforeAll(async (done) => {
-//     // jest.setTimeout = 30000;
-
-//     await mongoose.connect(`mongodb://127.0.0.1/ResidenceTest`, {
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true
-//     });
-
-//     done();
-
-// })
-
-// const userOne = {
-//     _id: new mongoose.Types.ObjectId(),
-//     name: 'Test User',
-//     email: 'test@test.com',
-//     password: '12345678'
-// }
-
-// const userTwo = {
-//     name: 'Test User',
-//     email: 'test2@test.com',
-//     password: '12345678'
-// }
-
-// beforeEach(async (done) => {
-//     await User.deleteMany();
-//     const hashedPassword = await bcrypt.hash(userOne.password, 12);
-
-//     await new User({
-//         ...userOne,
-//         password: hashedPassword
-//     }).save();
-//     done();
-// })
-// beforeAll(async () => await User.deleteMany());
 
 beforeEach(setupDb);
 
 describe('# Users', () => {
     test('Should signup a new user', async (done) => {
-        console.log(userOne);
         const response = await request(app)
             .post('/users/signup')
             .send({
@@ -81,17 +44,16 @@ describe('# Users', () => {
         done();
     });
 
-    // test('should login an existing user', async (done) => {
-    //     const userOneHashedPassword = await bcrypt.hash(userOne.password, 12);
-    //     await request(app)
-    //         .post('/users/login')
-    //         .send({
-    //             email: userOne.email,
-    //             password: userOneHashedPassword,
-    //         })
-    //         .expect(200)
-    //     done();
-    // });
+    test('should login an existing user', async (done) => {
+        await request(app)
+            .post('/users/login')
+            .send({
+                email: userOne.email,
+                password: userOne.password,
+            })
+            .expect(200)
+        done();
+    });
 
     test('should fail to login with wrong password', async (done) => {
         await request(app)
