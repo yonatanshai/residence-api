@@ -9,10 +9,10 @@ const { check } = require('express-validator');
 router.get('/:gid', checkAuth, groupsController.getGroupById);
 router.get('/users/:uid', checkAuth, groupsController.getGroupsByUserId);
 router.post(
-    '/',
-    [check('name').trim().notEmpty()],
-    checkAuth,
-    groupsController.createGroup
+	'/',
+	[check('name').trim().notEmpty()],
+	checkAuth,
+	groupsController.createGroup
 );
 
 router.patch('/', () => {
