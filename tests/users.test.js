@@ -1,10 +1,12 @@
 
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, setupDb } = require('./fixtures/db');
+const { userOne, userOneId, setupDb, seedDb, teardownDb } = require('./fixtures/db');
 
 
-beforeEach(setupDb);
+beforeAll(setupDb);
+beforeEach(seedDb);
+afterAll(teardownDb);
 
 describe('# Users', () => {
 	describe('Signup & Login', () => {

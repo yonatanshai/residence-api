@@ -1,14 +1,15 @@
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, groupOneId, setupDb } = require('./fixtures/db');
+const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb } = require('./fixtures/db');
 
-
-beforeEach(setupDb);
+beforeAll(setupDb);
+beforeEach(seedDb);
+afterAll(teardownDb);
 
 describe('Groups', () => {
 	describe('CREATE', () => {
 		test('should create a group by a user', async (done) => {
-			await request(app)
+			const response = await request(app)
 				.post('/groups/')
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.send({
@@ -16,6 +17,13 @@ describe('Groups', () => {
 					description: 'Test description'
 				})
 				.expect(201);
+			const creator = response.body.group.creator;
+			const userResponse = await request(app)
+				.get(`/users/${creator}`)
+				.expect(200);
+
+			expect(userResponse.body.user._id).toBe(creator);
+
 			done();
 		});
 

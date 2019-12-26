@@ -10,7 +10,7 @@ module.exports = async(req, res, next) => {
 		const token = req.headers.authorization.split(' ')[1];
 
 		if (!token) {
-			console.log('token not found');
+			// console.log('token not found');
 			return res.status(401).send({error: 'User not found'});
 		}
 		const decodedToken = jwt.verify(token, process.env.JWT_KEY);
@@ -25,7 +25,7 @@ module.exports = async(req, res, next) => {
 		};
 		next();
 	} catch (error) {
-		console.log(error);
+		// console.log(error);
 		return res.status(403).send({ error: 'Authentication required' });
 	}
 };
