@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const Group = require('../models/group');
@@ -67,12 +66,23 @@ const createGroup = async(req, res) => {
 	}
 
 	try {
-		const session = await mongoose.startSession();
-		session.startTransaction();
-		await createdGroup.save({ session });
+		// Right now sessions is disabled because of testing difficulties
+		// const session = await mongoose.startSession();
+		// session.startTransaction({writeConcern: 'w: 1'});
+
+		// user.groups.push(createdGroup);
+		// await createdGroup.save({ session });
+		// // await user.save({ session });
+		// await session.commitTransaction();
+		await createdGroup.save();
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ message: error.message});
+	}
+
+	try {
 		user.groups.push(createdGroup);
-		await user.save({ session });
-		await session.commitTransaction();
+		await user.save();
 	} catch (error) {
 		console.log(error.message);
 		return res.status(500).send({ message: error.message});

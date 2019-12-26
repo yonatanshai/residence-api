@@ -2,9 +2,11 @@ const request = require('supertest');
 const app = require('../app');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const { setupDb } = require('./fixtures/db');
+const { setupDb, seedDb, teardownDb } = require('./fixtures/db');
 
-beforeEach(setupDb);
+beforeAll(setupDb);
+beforeEach(seedDb);
+afterAll(teardownDb);
 
 describe('check-auth', () => {
 	test('should not authenticate a valid token for a non existing user', async(done) => {

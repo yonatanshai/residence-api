@@ -41,7 +41,7 @@ const connect = async(cb = null) => {
 	// .catch(err => console.log(err));
 };
 
-connect();
+// connect();
 
-// module.exports = connect;
+module.exports = connect;
 
