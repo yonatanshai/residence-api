@@ -22,6 +22,43 @@ describe('Groups', () => {
         done();
     });
 
+    test('should not create a group for an unauthenticated user', async (done) => {
+        const response = await request(app)
+            .post(`/groups/`)
+            .set('Authorization', `Bearer ${userOne.token}1`)
+            .send({
+                name: 'test group',
+                description: 'Test description'
+            })
+            .expect(403);
+        done();
+    });
+
+    test('should not create a group when a name is not provided', async (done) => {
+        await request(app)
+            .post('/groups')
+            .set('Authorization', `Bearer ${userOne.token}`)
+            .send({
+                description: 'Test description'
+            })
+            .expect(422);
+
+        done();
+    });
+
+    test('should not create a group when name is empty', async (done) => {
+        await request(app)
+            .post('/groups')
+            .set('Authorization', `Bearer ${userOne.token}`)
+            .send({
+                name: '  ',
+                description: 'Test description'
+            })
+            .expect(422);
+
+        done();
+    });
+
     test('should return a group by its id', async (done) => {
         const response = await request(app)
             .get(`/groups/${groupOneId}`)
@@ -30,6 +67,15 @@ describe('Groups', () => {
 
         const group = response.body.group;
         expect(group.admins).toBeDefined();
+
+        done();
+    });
+
+    test('should not return a group for an unauthenticated user', async (done) => {
+        await request(app)
+            .get(`/groups/${groupOneId}`)
+            .set('Authorization', `Bearer ${userOne.token}1`)
+            .expect(403);
 
         done();
     });

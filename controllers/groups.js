@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const Group = require('../models/group');
 
@@ -38,6 +38,10 @@ const getGroupsByUserId = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).send({error: 'Invalid input'})
+    }
     const userId = req.userData.userId;
     const { name, description } = req.body;
     
