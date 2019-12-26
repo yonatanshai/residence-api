@@ -5,7 +5,6 @@ const { userOne, userOneId, groupOneId, setupDb } = require('./fixtures/db');
 
 beforeEach(setupDb);
 
-// eslint-disable-next-line no-undef
 describe('Groups', () => {
 	test('should create a group by a user', async(done) => {
 		await request(app)
