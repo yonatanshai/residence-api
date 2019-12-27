@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const groupsController = require('../controllers/groups');
-const checkAuth = require('../middleware/check-auth');
+// const checkAuth = require('../middleware/auth/check-auth');
+const checkAuth = require('../middleware/auth/check-auth');
 const { check } = require('express-validator');
 
 // router.use(checkAuth);
@@ -19,8 +20,6 @@ router.patch('/', () => {
 
 });
 
-router.delete('/', () => {
-
-});
+router.delete('/:gid', checkAuth, groupsController.deleteGroup);
 
 module.exports = router;

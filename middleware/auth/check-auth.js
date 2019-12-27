@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
+// const User = require('../../models/user');
+const User = require('../../models/user');
 
-module.exports = async(req, res, next) => {
+module.exports = async (req, res, next) => {
 	if (req.method === 'OPTIONS') {
 		return next();
 	}
@@ -11,13 +12,13 @@ module.exports = async(req, res, next) => {
 
 		if (!token) {
 			// console.log('token not found');
-			return res.status(401).send({error: 'User not found'});
+			return res.status(401).send({ error: 'User not found' });
 		}
 		const decodedToken = jwt.verify(token, process.env.JWT_KEY);
 		const user = await User.findById(decodedToken.userId);
 
 		if (!user) {
-			return res.status(401).send({error: 'User not found'});
+			return res.status(401).send({ error: 'User not found' });
 		}
 
 		req.userData = {
