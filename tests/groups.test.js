@@ -123,6 +123,15 @@ describe('Groups', () => {
 			expect(response.body.group.members).toEqual(expect.arrayContaining([userTwoId.toHexString()]));
 			done();
 		});
+
+		test('should not add a member to the group if it is already in the group', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/members/${userOneId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(422);
+
+			done();
+		});
 	});
 
 	describe('DELETE', () => {

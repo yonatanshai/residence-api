@@ -50,7 +50,6 @@ const setupDb = async () => {
 			// options for mongoose 4.11.3 and above
 			useNewUrlParser: true,
 			useUnifiedTopology: true
-
 		};
 		const retryStr = 'retryWrites=false';
 		const newUri = mongoUri.concat(retryStr);

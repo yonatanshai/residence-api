@@ -134,13 +134,29 @@ const addMember = async (req, res) => {
 
 	let group;
 	try {
-		group = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
+		// group = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
+		group = await Group.findById(groupId);
 	} catch (error) {
 		console.log(error.message);
 		return res.status(500).send({ error: error.message });
 	}
 
-	return res.json({ group: group.toObject({ getters: true }) });
+	if (!group) {
+		return res.status(404).send({ error: 'Group not found' });
+	}
+
+	if (group.members.includes(newMember._id)) {
+		return res.status(422).send({ error: 'User is already a member' });
+	}
+
+	let updatedGroup;
+	try {
+		updatedGroup = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
+	} catch (error) {
+		return res.status(500).send({ error: error.message });
+	}
+
+	return res.json({ group: updatedGroup.toObject({ getters: true }) });
 
 };
 
