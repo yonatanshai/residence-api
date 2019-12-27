@@ -35,7 +35,7 @@ const groupOne = {
 	createdAt: new Date(),
 	creator: userOneId,
 	admins: [userOneId],
-	members: [userTwoId]
+	members: [userOneId]
 };
 
 let mongoServer;

@@ -39,8 +39,6 @@ describe('Groups', () => {
 				.get(`/users/${creator}`)
 				.expect(200);
 
-			console.log(userResponse.body.user.groups);
-
 			expect(userResponse.body.user.groups.length).toBe(2);
 
 			done();
@@ -111,6 +109,18 @@ describe('Groups', () => {
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.expect(200);
 
+			done();
+		});
+	});
+
+	describe('UPDATE', () => {
+		test('should add a member to the group', async (done) => {
+			const response = await request(app)
+				.post(`/groups/${groupOneId}/members/${userTwoId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(200);
+
+			expect(response.body.group.members).toEqual(expect.arrayContaining([userTwoId.toHexString()]));
 			done();
 		});
 	});

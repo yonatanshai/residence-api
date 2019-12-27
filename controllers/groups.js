@@ -115,10 +115,40 @@ const deleteGroup = async (req, res, next) => {
 	res.status(200).json({ message: 'deleted group' });
 };
 
+const addMember = async (req, res) => {
+	const userId = req.params.uid;
+	const groupId = req.params.gid;
+
+	let newMember;
+	try {
+		newMember = await User.findById(userId);
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ error: error.message });
+	}
+
+	if (!newMember) {
+		console.log('user not found');
+		return res.status(404).send({ error: 'User not found' });
+	}
+
+	let group;
+	try {
+		group = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ error: error.message });
+	}
+
+	return res.json({ group: group.toObject({ getters: true }) });
+
+};
+
 
 module.exports = {
 	getGroupsByUserId,
 	createGroup,
 	getGroupById,
-	deleteGroup
+	deleteGroup,
+	addMember
 };

@@ -16,9 +16,7 @@ router.post(
 	groupsController.createGroup
 );
 
-router.patch('/', () => {
-
-});
+router.post('/:gid/members/:uid', checkAuth, groupsController.addMember);
 
 router.delete('/:gid', checkAuth, groupsController.deleteGroup);
 
