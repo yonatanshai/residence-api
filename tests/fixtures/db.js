@@ -26,7 +26,7 @@ const userTwo = {
 	email: 'test2@test.com',
 	// password: userOneHashedPassword,
 	password: '12345678',
-	token: jwt.sign({ userId: userOneId, email: 'test2@test.com' }, process.env.JWT_KEY, { expiresIn: '1h' })
+	token: jwt.sign({ userId: userTwoId, email: 'test2@test.com' }, process.env.JWT_KEY, { expiresIn: '1h' })
 };
 
 const groupOne = {

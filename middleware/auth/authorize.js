@@ -1,24 +1,39 @@
-const authorize = (roles = []) => {
-	// roles param can be a single role string (e.g. Role.User or 'User')
-	// or an array of roles (e.g. [Role.Admin, Role.User] or ['Admin', 'User'])
-	if (typeof roles === 'string') {
-		roles = [roles];
+const jwt = require('jsonwebtoken');
+const User = require('../../models/user');
+const Group = require('../../models/group');
+
+const authorize = async (req, res, next) => {
+	if (req.method === 'OPTIONS') {
+		return next();
 	}
+	try {
+		const token = req.headers.authorization.split(' ')[1];
 
-	return [
-		// authenticate JWT token and attach user to request object (req.user)
-
-		// authorize based on user role
-		(req, res, next) => {
-			if (roles.length && !roles.includes(req.user.role)) {
-				// user's role is not authorized
-				return res.status(401).json({ message: 'Unauthorized' });
-			}
-
-			// authentication and authorization successful
-			next();
+		if (!token) {
+			// console.log('token not found');
+			return res.status(401).send({ error: 'User not found' });
 		}
-	];
+		const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+		const user = await User.findById(decodedToken.userId);
+
+		if (!user) {
+			return res.status(401).send({ error: 'User not found' });
+		}
+
+		const groupWithAdmin = await Group.findOne({admins: user._id});
+		if (!groupWithAdmin) {
+			return res.status(401).send({ error: 'Unauthorized'});
+		}
+
+
+		req.userData = {
+			userId: decodedToken.userId
+		};
+		next();
+	} catch (error) {
+		console.log(error.message);
+		return res.status(403).send({ error: 'Authentication required' });
+	}
 };
 
 module.exports = authorize;

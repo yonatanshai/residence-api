@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId } = require('./fixtures/db');
+const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId, userTwo } = require('./fixtures/db');
 
 beforeAll(setupDb);
 beforeEach(seedDb);
@@ -132,6 +132,15 @@ describe('Groups', () => {
 
 			done();
 		});
+
+		test('should not add a member if adding user is not an admin', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/members/${userOneId}`)
+				.set('Authorization', `Bearer ${userTwo.token}`)
+				.expect(401);
+
+			done();
+		});
 	});
 
 	describe('DELETE', () => {
@@ -173,6 +182,16 @@ describe('Groups', () => {
 				.expect(200);
 
 			expect(userTwoRes.body.user.groups.length).toBe(0);
+			done();
+		});
+
+		test('should not accept a delete request from a user with no admin privileges', async (done) => {
+			await request(app)
+				.delete(`/groups/${groupOneId}`)
+				.set('Authorization', `Bearer ${userTwo.token}`)
+				.send()
+				.expect(401);
+
 			done();
 		});
 	});
