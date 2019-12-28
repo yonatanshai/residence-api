@@ -30,21 +30,19 @@ const groupSchema = new mongoose.Schema({
 	}]
 });
 
-groupSchema.pre('save', async function (next) {
-	User.updateMany(
-		{ _id: this.creator },
-		{ $push: { groups: this._id }}
-		// {multi: false}
-	).exec();
+// groupSchema.pre('save', async function (next) {
+// 	User.updateOne(
+// 		{ _id: this.creator },
+// 		{ $push: { groups: this._id }}
+// 	).exec();
 
-	next();
-});
+// 	next();
+// });
 
 groupSchema.pre('remove', async function (next) {
 	User.updateMany(
 		{ groups: this._id },
 		{ $pull: { groups: this._id } }
-		// { multi: true }
 	).exec();
 
 	next();

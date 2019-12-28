@@ -81,13 +81,13 @@ const createGroup = async (req, res) => {
 		return res.status(500).send({ message: error.message });
 	}
 
-	// try {
-	// 	user.groups.push(createdGroup);
-	// 	await user.save();
-	// } catch (error) {
-	// 	console.log(error.message);
-	// 	return res.status(500).send({ message: error.message });
-	// }
+	try {
+		user.groups.push(createdGroup);
+		await user.save();
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ message: error.message });
+	}
 
 	res.status(201).json({ group: createdGroup });
 };
@@ -160,11 +160,61 @@ const addMember = async (req, res) => {
 
 };
 
+const removeMember = async (req, res) => {
+	let memberToRemove;
+	try {
+		memberToRemove = await User.findById(req.params.uid).populate('groups');
+	} catch (error) {
+		return res.status(500).send({ error: error.message });
+	}
+
+	if (!memberToRemove) {
+		return res.status(404).send({ error: 'Member not found' });
+	}
+
+	let groupToRemoveFrom;
+	try {
+		groupToRemoveFrom = await Group.findByIdAndUpdate(
+			req.params.gid,
+			{ $pull: { members: req.params.uid } },
+			{ new: true });
+	} catch (error) {
+		return res.status(500).send({ error: error.message });
+	}
+
+	return res.json({ group: groupToRemoveFrom.toObject({ getters: true }) });
+};
+
+const exitGroup = async (req, res) => {
+	console.log('exit group called');
+	const userId = req.userData.userId;
+	const groupId = req.params.gid;
+
+	let group;
+	try {
+		group = await Group.findByIdAndUpdate(groupId,
+			{ $pull: { members: userId, admins: userId } },
+			{ new: true }
+		);
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ error: error.message });
+	}
+
+	if (!group) {
+		return res.status(404).send({ error: 'Group not found' });
+	}
+
+	return res.json({ group: group.toObject({ getters: true }) });
+};
+
 
 module.exports = {
 	getGroupsByUserId,
 	createGroup,
 	getGroupById,
 	deleteGroup,
-	addMember
+	addMember,
+	removeMember,
+	exitGroup
 };

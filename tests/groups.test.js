@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId, userTwo } = require('./fixtures/db');
+const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId, userTwo, userThreeId } = require('./fixtures/db');
 
 beforeAll(setupDb);
 beforeEach(seedDb);
@@ -39,7 +39,7 @@ describe('Groups', () => {
 				.get(`/users/${creator}`)
 				.expect(200);
 
-			expect(userResponse.body.user.groups.length).toBe(2);
+			expect(userResponse.body.user.groups.length).toBe(1);
 
 			done();
 		});
@@ -139,6 +139,29 @@ describe('Groups', () => {
 				.set('Authorization', `Bearer ${userTwo.token}`)
 				.expect(401);
 
+			done();
+		});
+
+		test('should remove a member from the group', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/members/${userThreeId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			done();
+
+			expect(response.body.group).not.toEqual(expect.arrayContaining([userThreeId.toHexString()]));
+		});
+
+		test('should be able to exit the group', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/members/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			expect(response.body.group).not.toEqual(expect.arrayContaining([userOneId.toHexString()]));
 			done();
 		});
 	});
