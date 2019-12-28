@@ -1,6 +1,16 @@
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId, userTwo } = require('./fixtures/db');
+const {
+	userOne,
+	userOneId,
+	groupOneId,
+	setupDb,
+	seedDb,
+	teardownDb,
+	userTwoId,
+	userTwo,
+	userThreeId,
+	groupTwoId } = require('./fixtures/db');
 
 beforeAll(setupDb);
 beforeEach(seedDb);
@@ -39,7 +49,7 @@ describe('Groups', () => {
 				.get(`/users/${creator}`)
 				.expect(200);
 
-			expect(userResponse.body.user.groups.length).toBe(2);
+			expect(userResponse.body.user.groups.length).toBe(1);
 
 			done();
 		});
@@ -137,6 +147,77 @@ describe('Groups', () => {
 			await request(app)
 				.post(`/groups/${groupOneId}/members/${userOneId}`)
 				.set('Authorization', `Bearer ${userTwo.token}`)
+				.expect(401);
+
+			done();
+		});
+
+		test('should remove a member from the group', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/members/${userThreeId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			done();
+
+			expect(response.body.group).not.toEqual(expect.arrayContaining([userThreeId.toHexString()]));
+		});
+
+		test('should be able to exit the group', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/members/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			expect(response.body.group).not.toEqual(expect.arrayContaining([userOneId.toHexString()]));
+			done();
+		});
+
+		test('should make a user admin', async (done) => {
+			const response = await request(app)
+				.post(`/groups/${groupOneId}/admins/${userThreeId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(200);
+
+			expect(response.body.group.admins).toEqual(expect.arrayContaining([userOneId.toHexString()], userThreeId.toHexString()));
+
+			done();
+		});
+
+		test('should not make a user admin if it is not a member', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/admins/${userTwoId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(422);
+			done();
+		});
+
+		test('should not make a user admin if it is already an admin', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/admins/${userTwoId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(422);
+			done();
+		});
+
+		test('should resign as admin', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/admins/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			expect(response.body.group.admins.length).toBe(1);
+			done();
+		});
+
+		test('should not be able to resign as admin if is the only one', async (done) => {
+			await request(app)
+				.delete(`/groups/${groupTwoId}/admins/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
 				.expect(401);
 
 			done();
