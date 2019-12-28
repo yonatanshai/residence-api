@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const groupsController = require('../controllers/groups');
-const checkAuth = require('../middleware/check-auth');
+// const checkAuth = require('../middleware/auth/check-auth');
+const checkAuth = require('../middleware/auth/check-auth');
+const authorize = require('../middleware/auth/authorize');
 const { check } = require('express-validator');
 
 // router.use(checkAuth);
@@ -15,12 +17,8 @@ router.post(
 	groupsController.createGroup
 );
 
-router.patch('/', () => {
+router.post('/:gid/members/:uid', authorize, groupsController.addMember);
 
-});
-
-router.delete('/', () => {
-
-});
+router.delete('/:gid', authorize, groupsController.deleteGroup);
 
 module.exports = router;
