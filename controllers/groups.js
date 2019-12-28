@@ -247,6 +247,33 @@ const exitGroup = async (req, res) => {
 	return res.json({ group: group.toObject({ getters: true }) });
 };
 
+const resignAsAdmin = async (req, res) => {
+	const userId = req.userData.userId;
+
+	let group;
+	try {
+		// group = await Group.findByIdAndUpdate(req.params.gid, { $pull: { admins: userId } }, { new: true });
+		group = await Group.findById(req.params.gid);
+	} catch (error) {
+		return res.status(500).send({ error: error.message });
+	}
+
+	if (!group) {
+		return res.status(404).send({ error: 'Group not found' });
+	}
+
+	if (group.admins.length === 1) {
+		return res.status(401).send({ error: 'A group must have at least one admin' });
+	}
+
+	const userIndex = group.admins.indexOf(userId);
+	if (userIndex !== -1) {
+		group.admins.splice(userIndex, 1);
+	}
+
+	return res.json({ group: group.toObject({ getters: true }) });
+};
+
 
 module.exports = {
 	getGroupsByUserId,
@@ -256,5 +283,6 @@ module.exports = {
 	addMember,
 	removeMember,
 	exitGroup,
-	makeAdmin
+	makeAdmin,
+	resignAsAdmin
 };

@@ -22,6 +22,7 @@ router.post('/:gid/admins/:uid', authorize, groupsController.makeAdmin);
 
 router.delete('/:gid/members/me', authenticate, groupsController.exitGroup);
 router.delete('/:gid/members/:uid', authorize, groupsController.removeMember);
+router.delete('/:gid/admins/me', authorize, groupsController.resignAsAdmin);
 router.delete('/:gid', authorize, groupsController.deleteGroup);
 
 module.exports = router;

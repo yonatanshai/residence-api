@@ -9,7 +9,9 @@ const User = require('../../models/user');
 const userOneId = new mongoose.Types.ObjectId();
 const userTwoId = new mongoose.Types.ObjectId();
 const userThreeId = new mongoose.Types.ObjectId();
+const userFourId = new mongoose.Types.ObjectId();
 const groupOneId = new mongoose.Types.ObjectId();
+const groupTwoId = new mongoose.Types.ObjectId();
 
 const userOne = {
 	_id: userOneId,
@@ -39,8 +41,26 @@ const userThree = {
 	token: jwt.sign({ userId: userThreeId, email: 'test3@test.com' }, process.env.JWT_KEY, { expiresIn: '1h' })
 };
 
+const userFour = {
+	_id: userFourId,
+	name: 'User 4',
+	email: 'test4@test.com',
+	// password: userOneHashedPassword,
+	password: '12345678',
+	token: jwt.sign({ userId: userFourId, email: 'test4@test.com' }, process.env.JWT_KEY, { expiresIn: '1h' })
+};
+
 const groupOne = {
 	_id: groupOneId,
+	name: 'test group',
+	createdAt: new Date(),
+	creator: userOneId,
+	admins: [userOneId, userFourId],
+	members: [userOneId, userThreeId]
+};
+
+const groupTwo = {
+	_id: groupTwoId,
 	name: 'test group',
 	createdAt: new Date(),
 	creator: userOneId,
@@ -100,7 +120,13 @@ const seedDb = async () => {
 		password: await bcrypt.hash('12345678', 12)
 	}).save();
 
+	await new User({
+		...userFour,
+		password: await bcrypt.hash('12345678', 12)
+	}).save();
+
 	await new Group(groupOne).save();
+	await new Group(groupTwo).save();
 };
 
 const teardownDb = async () => {
@@ -120,5 +146,8 @@ module.exports = {
 	userTwo,
 	userTwoId,
 	userThreeId,
-	userThree
+	userThree,
+	userFour,
+	userFourId,
+	groupTwoId
 };

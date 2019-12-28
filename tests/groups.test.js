@@ -1,6 +1,16 @@
 const request = require('supertest');
 const app = require('../app');
-const { userOne, userOneId, groupOneId, setupDb, seedDb, teardownDb, userTwoId, userTwo, userThreeId } = require('./fixtures/db');
+const {
+	userOne,
+	userOneId,
+	groupOneId,
+	setupDb,
+	seedDb,
+	teardownDb,
+	userTwoId,
+	userTwo,
+	userThreeId,
+	groupTwoId } = require('./fixtures/db');
 
 beforeAll(setupDb);
 beforeEach(seedDb);
@@ -189,6 +199,27 @@ describe('Groups', () => {
 				.post(`/groups/${groupOneId}/admins/${userTwoId}`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.expect(422);
+			done();
+		});
+
+		test('should resign as admin', async (done) => {
+			const response = await request(app)
+				.delete(`/groups/${groupOneId}/admins/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(200);
+
+			expect(response.body.group.admins.length).toBe(1);
+			done();
+		});
+
+		test('should not be able to resign as admin if is the only one', async (done) => {
+			await request(app)
+				.delete(`/groups/${groupTwoId}/admins/me`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.send()
+				.expect(401);
+
 			done();
 		});
 	});
