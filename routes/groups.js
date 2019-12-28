@@ -16,12 +16,12 @@ router.post(
 	authenticate,
 	groupsController.createGroup
 );
-
 router.post('/:gid/members/:uid', authorize, groupsController.addMember);
+
+router.post('/:gid/admins/:uid', authorize, groupsController.makeAdmin);
 
 router.delete('/:gid/members/me', authenticate, groupsController.exitGroup);
 router.delete('/:gid/members/:uid', authorize, groupsController.removeMember);
-
 router.delete('/:gid', authorize, groupsController.deleteGroup);
 
 module.exports = router;

@@ -164,6 +164,33 @@ describe('Groups', () => {
 			expect(response.body.group).not.toEqual(expect.arrayContaining([userOneId.toHexString()]));
 			done();
 		});
+
+		test('should make a user admin', async (done) => {
+			const response = await request(app)
+				.post(`/groups/${groupOneId}/admins/${userThreeId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(200);
+
+			expect(response.body.group.admins).toEqual(expect.arrayContaining([userOneId.toHexString()], userThreeId.toHexString()));
+
+			done();
+		});
+
+		test('should not make a user admin if it is not a member', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/admins/${userTwoId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(422);
+			done();
+		});
+
+		test('should not make a user admin if it is already an admin', async (done) => {
+			await request(app)
+				.post(`/groups/${groupOneId}/admins/${userTwoId}`)
+				.set('Authorization', `Bearer ${userOne.token}`)
+				.expect(422);
+			done();
+		});
 	});
 
 	describe('DELETE', () => {

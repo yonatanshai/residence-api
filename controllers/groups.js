@@ -115,6 +115,46 @@ const deleteGroup = async (req, res, next) => {
 	res.status(200).json({ message: 'deleted group' });
 };
 
+const makeAdmin = async (req, res) => {
+	const groupId = req.params.gid;
+	const userId = req.params.uid;
+	console.log(req.params);
+	let group;
+	try {
+		group = await Group.findById(groupId);
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).send({ error: error.message });
+	}
+
+	if (!group) {
+		return res.status(404).send({ error: 'Group not found' });
+	}
+
+	const isMember = group.members.some((member) => member.toString() === userId.toString());
+	if (!isMember) {
+		console.log('not a member');
+		return res.status(422).send({ error: 'User must be a member to be an admin' });
+	}
+
+	const isAdmin = group.admins.some((admin) => admin.toString() === userId.toString());
+	if (isAdmin) {
+		console.log('already an admin');
+		return res.status(422).send({ message: 'User is already an admin' });
+	}
+
+	group.admins.push(userId);
+
+	let updatedGroup;
+	try {
+		updatedGroup = await group.save();
+	} catch (error) {
+		return res.status(500).send({ error: error.message });
+	}
+
+	return res.json({ group: updatedGroup.toObject({ getters: true }) });
+};
+
 const addMember = async (req, res) => {
 	const userId = req.params.uid;
 	const groupId = req.params.gid;
@@ -186,7 +226,6 @@ const removeMember = async (req, res) => {
 };
 
 const exitGroup = async (req, res) => {
-	console.log('exit group called');
 	const userId = req.userData.userId;
 	const groupId = req.params.gid;
 
@@ -216,5 +255,6 @@ module.exports = {
 	deleteGroup,
 	addMember,
 	removeMember,
-	exitGroup
+	exitGroup,
+	makeAdmin
 };
