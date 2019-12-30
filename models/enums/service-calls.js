@@ -1,4 +1,4 @@
-export const ServiceCallStatus = Object.freeze({
+const ServiceCallStatus = Object.freeze({
 	NEW: 'NEW',
 	ASSIGNED: 'ASSIGNED',
 	REFERRED_TO_PROFESSIONAL: 'REFERRED_TO_PROFESSIONAL',
@@ -6,7 +6,7 @@ export const ServiceCallStatus = Object.freeze({
 	RESOLVED: 'RESOLVED'
 });
 
-export const ServiceCallCategory = Object.freeze({
+const ServiceCallCategory = Object.freeze({
 	LIGHTS: 'LIGHTS',
 	BILLS: 'BILLS',
 	PLUMBING: 'PLUMBING',
@@ -15,3 +15,8 @@ export const ServiceCallCategory = Object.freeze({
 	PESTS: 'PESTS',
 	OTHER: 'OTHER'
 });
+
+module.exports = {
+	ServiceCallStatus,
+	ServiceCallCategory
+}

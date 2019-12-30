@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { ServiceCallStatus, ServiceCallCategory } from './enums/service-calls';
+const mongoose = require('mongoose');
+const { ServiceCallStatus, ServiceCallCategory } = require('../models/enums/service-calls');
 
 const serviceCallSchema = mongoose.Schema({
 	title: {
@@ -20,7 +20,8 @@ const serviceCallSchema = mongoose.Schema({
 				ServiceCallStatus.CLOSED_UNRESOLVED,
 				ServiceCallStatus.RESOLVED
 			],
-		required: true
+		required: true,
+		default: ServiceCallStatus.NEW
 	},
 	category: {
 		type: String,
@@ -48,4 +49,4 @@ const serviceCallSchema = mongoose.Schema({
 	}
 });
 
-export default mongoose.model('ServiceCall', serviceCallSchema);
+module.exports = mongoose.model('ServiceCall', serviceCallSchema);

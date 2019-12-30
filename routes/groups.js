@@ -8,7 +8,7 @@ const { check } = require('express-validator');
 
 // router.use(authenticate);
 
-router.get('/:gid', authenticate, groupsController.getGroupById);
+router.get('/:groupId', authenticate, groupsController.getGroupById);
 router.get('/users/:uid', authenticate, groupsController.getGroupsByUserId);
 router.post(
 	'/',
@@ -16,13 +16,13 @@ router.post(
 	authenticate,
 	groupsController.createGroup
 );
-router.post('/:gid/members/:uid', authorize, groupsController.addMember);
+router.post('/:groupId/members/:uid', authorize, groupsController.addMember);
 
-router.post('/:gid/admins/:uid', authorize, groupsController.makeAdmin);
+router.post('/:groupId/admins/:uid', authorize, groupsController.makeAdmin);
 
-router.delete('/:gid/members/me', authenticate, groupsController.exitGroup);
-router.delete('/:gid/members/:uid', authorize, groupsController.removeMember);
-router.delete('/:gid/admins/me', authorize, groupsController.resignAsAdmin);
-router.delete('/:gid', authorize, groupsController.deleteGroup);
+router.delete('/:groupId/members/me', authenticate, groupsController.exitGroup);
+router.delete('/:groupId/members/:uid', authorize, groupsController.removeMember);
+router.delete('/:groupId/admins/me', authorize, groupsController.resignAsAdmin);
+router.delete('/:groupId', authorize, groupsController.deleteGroup);
 
 module.exports = router;

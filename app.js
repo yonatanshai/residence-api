@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const HttpError = require('./models/http-error');
 const usersRoutes = require('./routes/users');
 const groupRoutes = require('./routes/groups');
+const serviceCallsRoutes = require('./routes/service-calls.js');
 // require('./db/mongoose');
 
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
 app.use('/users', usersRoutes);
 app.use('/groups', groupRoutes);
+app.use('/service-calls', serviceCallsRoutes);
 
 app.use(() => {
 	throw new HttpError('Could not find this route', 404);

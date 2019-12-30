@@ -4,7 +4,7 @@ const Group = require('../models/group');
 
 
 const getGroupById = async (req, res) => {
-	const groupId = req.params.gid;
+	const groupId = req.params.groupId;
 
 	let group;
 	try {
@@ -21,7 +21,7 @@ const getGroupById = async (req, res) => {
 };
 
 const getGroupsByUserId = async (req, res) => {
-	const userId = req.params.uid;
+	const userId = req.userData.userId;
 
 	let userWithGroups;
 	try {
@@ -30,7 +30,7 @@ const getGroupsByUserId = async (req, res) => {
 		return res.status(500).send({ message: 'error' });
 	}
 
-	if (!userWithGroups.groups) {
+	if (!userWithGroups) {
 		return res.status(404).send({ message: 'groups not found' });
 	}
 
@@ -93,7 +93,7 @@ const createGroup = async (req, res) => {
 };
 
 const deleteGroup = async (req, res, next) => {
-	const groupId = req.params.gid;
+	const groupId = req.params.groupId;
 
 	let group;
 	try {
@@ -116,7 +116,7 @@ const deleteGroup = async (req, res, next) => {
 };
 
 const makeAdmin = async (req, res) => {
-	const groupId = req.params.gid;
+	const groupId = req.params.groupId;
 	const userId = req.params.uid;
 	console.log(req.params);
 	let group;
@@ -157,7 +157,7 @@ const makeAdmin = async (req, res) => {
 
 const addMember = async (req, res) => {
 	const userId = req.params.uid;
-	const groupId = req.params.gid;
+	const groupId = req.params.groupId;
 
 	let newMember;
 	try {
@@ -215,7 +215,7 @@ const removeMember = async (req, res) => {
 	let groupToRemoveFrom;
 	try {
 		groupToRemoveFrom = await Group.findByIdAndUpdate(
-			req.params.gid,
+			req.params.groupId,
 			{ $pull: { members: req.params.uid } },
 			{ new: true });
 	} catch (error) {
@@ -227,7 +227,7 @@ const removeMember = async (req, res) => {
 
 const exitGroup = async (req, res) => {
 	const userId = req.userData.userId;
-	const groupId = req.params.gid;
+	const groupId = req.params.groupId;
 
 	let group;
 	try {
@@ -252,8 +252,7 @@ const resignAsAdmin = async (req, res) => {
 
 	let group;
 	try {
-		// group = await Group.findByIdAndUpdate(req.params.gid, { $pull: { admins: userId } }, { new: true });
-		group = await Group.findById(req.params.gid);
+		group = await Group.findById(req.params.groupId);
 	} catch (error) {
 		return res.status(500).send({ error: error.message });
 	}

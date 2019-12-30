@@ -20,7 +20,7 @@ const authorize = async (req, res, next) => {
 			return res.status(401).send({ error: 'User not found' });
 		}
 
-		const groupWithAdmin = await Group.findOne({admins: user._id});
+		const groupWithAdmin = await Group.findOne({_id: req.params.groupId, admins: user._id});
 		if (!groupWithAdmin) {
 			return res.status(401).send({ error: 'Unauthorized'});
 		}

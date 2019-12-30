@@ -4,6 +4,8 @@ const {MongoMemoryServer} = require('mongodb-memory-server');
 const jwt = require('jsonwebtoken');
 const Group = require('../../models/group');
 const User = require('../../models/user');
+const ServiceCall = require('../../models/service-call');
+const { ServiceCallStatus, ServiceCallCategory } = require('../../models/enums/service-calls');
 
 
 const userOneId = new mongoose.Types.ObjectId();
@@ -12,6 +14,10 @@ const userThreeId = new mongoose.Types.ObjectId();
 const userFourId = new mongoose.Types.ObjectId();
 const groupOneId = new mongoose.Types.ObjectId();
 const groupTwoId = new mongoose.Types.ObjectId();
+const serviceCallOneId = new mongoose.Types.ObjectId();
+
+const ids = [userOneId, userTwoId, userThreeId, userFourId, groupOneId, groupTwoId, serviceCallOneId];
+
 
 const userOne = {
 	_id: userOneId,
@@ -68,10 +74,21 @@ const groupTwo = {
 	members: [userOneId, userThreeId]
 };
 
+const serviceCallOne = {
+	_id: serviceCallOneId,
+	title: 'service call one',
+	description: 'service call one description',
+	status: ServiceCallStatus.NEW,
+	category: ServiceCallCategory.OTHER,
+	creator: userOneId,
+	group: groupOneId
+};
+
 let mongoServer;
 
 
 const setupDb = async () => {
+	ids.forEach((i) => console.log(i));
 	mongoServer = new MongoMemoryServer();
 
 	mongoose.Promise = Promise;
@@ -93,7 +110,10 @@ const setupDb = async () => {
 			console.log(e);
 		});
 
-		mongoose.connection.once('open', () => {
+		mongoose.connection.once('open', async () => {
+			await User.deleteMany();
+			await Group.deleteMany();
+			await ServiceCall.deleteMany();
 			console.log(`MongoDB successfully connected to ${mongoUri}`);
 		});
 	});
@@ -104,6 +124,7 @@ const setupDb = async () => {
 const seedDb = async () => {
 	await User.deleteMany();
 	await Group.deleteMany();
+	await ServiceCall.deleteMany();
 
 	await new User({
 		...userOne,
@@ -127,12 +148,13 @@ const seedDb = async () => {
 
 	await new Group(groupOne).save();
 	await new Group(groupTwo).save();
+
+	await new ServiceCall(serviceCallOne).save();
 };
 
 const teardownDb = async () => {
 	await mongoose.disconnect();
 	await mongoServer.stop();
-
 };
 
 module.exports = {
@@ -149,5 +171,7 @@ module.exports = {
 	userThree,
 	userFour,
 	userFourId,
-	groupTwoId
+	groupTwoId,
+	serviceCallOne,
+	serviceCallOneId
 };
