@@ -2,17 +2,13 @@ const request = require('supertest');
 const app = require('../app');
 const {
 	userOne,
-	userOneId,
 	groupOneId,
 	setupDb,
 	seedDb,
 	teardownDb,
-	userTwoId,
 	userTwo,
-	userThreeId,
-	groupTwoId,
-	serviceCallOne,
-	serviceCallOneId } = require('./fixtures/db');
+	serviceCallOneId
+} = require('./fixtures/db');
 const { ServiceCallStatus, ServiceCallCategory } = require('../models/enums/service-calls');
 
 beforeAll(setupDb);

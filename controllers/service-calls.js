@@ -2,7 +2,6 @@ const { validationResult } = require('express-validator');
 // const User = require('../models/user');
 // const Group = require('../models/group');
 const ServiceCall = require('../models/service-call');
-const Group = require('../models/group');
 const { isAdmin, findGroupById } = require('./util/groups');
 const { ServiceCallStatus } = require('../models/enums/service-calls');
 
@@ -119,7 +118,7 @@ const updateServiceCallStatus = async (req, res) => {
 	await serviceCall.save();
 
 	return res.json({ serviceCall: serviceCall.toObject({ getters: true }) });
-}
+};
 
 const deleteServiceCall = async (req, res) => {
 	const callId = req.params.serviceCallId;

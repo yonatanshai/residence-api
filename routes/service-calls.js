@@ -2,8 +2,6 @@ const express = require('express');
 
 const authenticate = require('../middleware/auth/check-auth');
 const isMember = require('../middleware/auth/is-group-member');
-const authorize = require('../middleware/auth/authorize');
-// const authorize = require('../middleware/auth/authorize');
 const { check } = require('express-validator');
 const controller = require('../controllers/service-calls');
 

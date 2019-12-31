@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const Group = require('../models/group');
-const {findGroupById, isAdmin} = require('./util/groups');
+const {findGroupById} = require('./util/groups');
 
 const getGroupById = async (req, res) => {
 	const groupId = req.params.groupId;
