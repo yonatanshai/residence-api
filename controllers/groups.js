@@ -1,21 +1,17 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const Group = require('../models/group');
-
+const {findGroupById, isAdmin} = require('./util/groups');
 
 const getGroupById = async (req, res) => {
 	const groupId = req.params.groupId;
 
-	let group;
-	try {
-		group = await Group.findById(groupId);
-	} catch (error) {
-		return res.status(500).send({ message: 'Error fetching a group' });
+	const result = await findGroupById(groupId);
+	if (!result.group) {
+		return res.status(result.code).send({ message: result.message });
 	}
 
-	if (!group) {
-		return res.status(404).send({ message: 'Group not found' });
-	}
+	const group = result.group;
 
 	return res.json({ group: group.toObject({ getters: true }) });
 };
@@ -95,16 +91,12 @@ const createGroup = async (req, res) => {
 const deleteGroup = async (req, res, next) => {
 	const groupId = req.params.groupId;
 
-	let group;
-	try {
-		group = await Group.findById(groupId);
-	} catch (error) {
-		return res.status(500).send({ error: error.message });
+	const result = await findGroupById(groupId);
+	if (!result.group) {
+		return res.status(result.code).send({ message: result.message });
 	}
 
-	if (!group) {
-		return res.status(404).send({ error: 'Group not found' });
-	}
+	const group = result.group;
 
 	try {
 		await group.remove();
@@ -118,18 +110,14 @@ const deleteGroup = async (req, res, next) => {
 const makeAdmin = async (req, res) => {
 	const groupId = req.params.groupId;
 	const userId = req.params.uid;
-	console.log(req.params);
-	let group;
-	try {
-		group = await Group.findById(groupId);
-	} catch (error) {
-		console.log(error.message);
-		return res.status(500).send({ error: error.message });
+
+	const result = await findGroupById(groupId);
+
+	if (!result.group) {
+		return res.status(result.code).send({ message: result.message });
 	}
 
-	if (!group) {
-		return res.status(404).send({ error: 'Group not found' });
-	}
+	const group = result.group;
 
 	const isMember = group.members.some((member) => member.toString() === userId.toString());
 	if (!isMember) {
@@ -138,6 +126,7 @@ const makeAdmin = async (req, res) => {
 	}
 
 	const isAdmin = group.admins.some((admin) => admin.toString() === userId.toString());
+	// if (isAdmin(group, userId)) {
 	if (isAdmin) {
 		console.log('already an admin');
 		return res.status(422).send({ message: 'User is already an admin' });
@@ -172,29 +161,19 @@ const addMember = async (req, res) => {
 		return res.status(404).send({ error: 'User not found' });
 	}
 
-	let group;
-	try {
-		// group = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
-		group = await Group.findById(groupId);
-	} catch (error) {
-		console.log(error.message);
-		return res.status(500).send({ error: error.message });
+	const result = await findGroupById(groupId);
+
+	if (!result.group) {
+		return res.status(result.code).send({ message: result.message });
 	}
 
-	if (!group) {
-		return res.status(404).send({ error: 'Group not found' });
-	}
-
-	if (group.members.includes(newMember._id)) {
+	if (result.group.members.includes(newMember._id)) {
 		return res.status(422).send({ error: 'User is already a member' });
 	}
 
-	let updatedGroup;
-	try {
-		updatedGroup = await Group.findByIdAndUpdate(groupId, { $push: { members: newMember._id } }, { new: true });
-	} catch (error) {
-		return res.status(500).send({ error: error.message });
-	}
+	result.group.members.push(newMember._id);
+
+	const updatedGroup = result.group;
 
 	return res.json({ group: updatedGroup.toObject({ getters: true }) });
 
@@ -250,16 +229,13 @@ const exitGroup = async (req, res) => {
 const resignAsAdmin = async (req, res) => {
 	const userId = req.userData.userId;
 
-	let group;
-	try {
-		group = await Group.findById(req.params.groupId);
-	} catch (error) {
-		return res.status(500).send({ error: error.message });
+	const result = await findGroupById(req.params.groupId);
+
+	if (!result.group) {
+		return res.status(result.code).send({ message: result.message });
 	}
 
-	if (!group) {
-		return res.status(404).send({ error: 'Group not found' });
-	}
+	const group = result.group;
 
 	if (group.admins.length === 1) {
 		return res.status(401).send({ error: 'A group must have at least one admin' });
@@ -272,7 +248,6 @@ const resignAsAdmin = async (req, res) => {
 
 	return res.json({ group: group.toObject({ getters: true }) });
 };
-
 
 module.exports = {
 	getGroupsByUserId,

@@ -16,7 +16,7 @@ const groupOneId = new mongoose.Types.ObjectId();
 const groupTwoId = new mongoose.Types.ObjectId();
 const serviceCallOneId = new mongoose.Types.ObjectId();
 
-const ids = [userOneId, userTwoId, userThreeId, userFourId, groupOneId, groupTwoId, serviceCallOneId];
+// const ids = [userOneId, userTwoId, userThreeId, userFourId, groupOneId, groupTwoId, serviceCallOneId];
 
 
 const userOne = {
@@ -88,7 +88,6 @@ let mongoServer;
 
 
 const setupDb = async () => {
-	ids.forEach((i) => console.log(i));
 	mongoServer = new MongoMemoryServer();
 
 	mongoose.Promise = Promise;
