@@ -35,7 +35,9 @@ const createServiceCall = async (req, res) => {
 };
 
 const getServiceCallById = async (req, res) => {
+	console.log('getServiceCallById called');
 	const callId = req.params.serviceCallId;
+	console.log(req.params);
 
 	let serviceCall;
 	try {

@@ -19,7 +19,7 @@ describe('Service Calls', () => {
 	describe('CREATE', () => {
 		test('should create a new service call', async (done) => {
 			await request(app)
-				.post(`/service-calls/${groupOneId}`)
+				.post(`/groups/${groupOneId}/service-calls`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.send({
 					title: 'title',
@@ -33,7 +33,7 @@ describe('Service Calls', () => {
 
 		test('should not create a new service call by a non member user', async (done) => {
 			await request(app)
-				.post(`/service-calls/${groupOneId}`)
+				.post(`/groups/${groupOneId}/service-calls`)
 				.set('Authorization', `Bearer ${userTwo.token}`)
 				.send({
 					title: 'title',
@@ -47,7 +47,7 @@ describe('Service Calls', () => {
 
 		test('should not create a new service call if group is not found', async (done) => {
 			await request(app)
-				.post(`/service-calls/${groupOneId}1`)
+				.post(`/groups/${groupOneId}1/service-calls`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.send({
 					title: 'title',
@@ -63,7 +63,7 @@ describe('Service Calls', () => {
 	describe('READ', () => {
 		test('should get a service call by id', async (done) => {
 			await request(app)
-				.get(`/service-calls/${serviceCallOneId}`)
+				.get(`/groups/${groupOneId}/service-calls/${serviceCallOneId}`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.expect(200);
 
@@ -72,7 +72,7 @@ describe('Service Calls', () => {
 
 		test('should get all service calls for a group', async (done) => {
 			const response = await request(app)
-				.get(`/service-calls/groups/${groupOneId}`)
+				.get(`/groups/${groupOneId}/service-calls`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.expect(200);
 
@@ -83,7 +83,7 @@ describe('Service Calls', () => {
 
 		test('should get all service calls for requesting user', async (done) => {
 			const response = await request(app)
-				.get('/service-calls/me')
+				.get('/groups/1/service-calls/me')
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.expect(200);
 
@@ -96,7 +96,7 @@ describe('Service Calls', () => {
 	describe('UPDATE', () => {
 		test('should update a service call status', async (done) => {
 			const response = await request(app)
-				.patch(`/service-calls/${serviceCallOneId}/status`)
+				.patch(`/groups/${groupOneId}/service-calls/${serviceCallOneId}/status`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.send({
 					status: ServiceCallStatus.ASSIGNED
@@ -112,7 +112,7 @@ describe('Service Calls', () => {
 	describe('DELETE', () => {
 		test('should delete a service call', async (done) => {
 			await request(app)
-				.delete(`/service-calls/${serviceCallOneId}`)
+				.delete(`/groups/${groupOneId}/service-calls/${serviceCallOneId}`)
 				.set('Authorization', `Bearer ${userOne.token}`)
 				.send()
 				.expect(200);
