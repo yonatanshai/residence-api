@@ -27,6 +27,7 @@ router.delete('/:groupId/members/:uid', authorize, groupsController.removeMember
 router.delete('/:groupId/admins/me', authorize, groupsController.resignAsAdmin);
 router.delete('/:groupId', authorize, groupsController.deleteGroup);
 
+// Nested routes
 router.use('/:groupId/posts/', postsRoutes);
 router.use('/:groupId/service-calls', serviceCallRoutes);
 
