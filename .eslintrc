@@ -9,7 +9,8 @@
     "ecmaVersion": 2018,
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true
-    }
+    },
+    "sourceType": "module"
   },
   // "parser":"babel-eslint",
   "rules": {

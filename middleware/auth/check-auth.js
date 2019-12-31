@@ -7,6 +7,7 @@ module.exports = async (req, res, next) => {
 	if (req.method === 'OPTIONS') {
 		return next();
 	}
+	console.log('check auth called');
 	try {
 		const token = req.headers.authorization.split(' ')[1];
 
