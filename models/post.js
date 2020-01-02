@@ -17,16 +17,14 @@ const postSchema = mongoose.Schema({
 		required: true,
 		ref: 'Group'
 	},
+	createdAt: {
+		type: Date,
+		required: true
+	},
 	likes: [{
-		count: {
-			type: Number,
-			required: true
-		},
-		user: {
-			type: mongoose.Types.ObjectId,
-			required: true,
-			ref: 'User'
-		}
+		type: mongoose.Types.ObjectId,
+		required: true,
+		ref: 'User'
 	}],
 	comments: [{
 		type: mongoose.Types.ObjectId,

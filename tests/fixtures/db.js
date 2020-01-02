@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const Group = require('../../models/group');
 const User = require('../../models/user');
 const ServiceCall = require('../../models/service-call');
+const Post = require('../../models/post');
 const { ServiceCallStatus, ServiceCallCategory } = require('../../models/enums/service-calls');
 
 
@@ -15,6 +16,7 @@ const userFourId = new mongoose.Types.ObjectId();
 const groupOneId = new mongoose.Types.ObjectId();
 const groupTwoId = new mongoose.Types.ObjectId();
 const serviceCallOneId = new mongoose.Types.ObjectId();
+const postOneId = new mongoose.Types.ObjectId();
 
 // const ids = [userOneId, userTwoId, userThreeId, userFourId, groupOneId, groupTwoId, serviceCallOneId];
 
@@ -74,6 +76,16 @@ const groupTwo = {
 	members: [userOneId, userThreeId]
 };
 
+const postOne = {
+	_id: postOneId,
+	text: 'post one',
+	creator: userOneId,
+	group: groupOneId,
+	createdAt: new Date(),
+	likes: [userTwoId],
+	comments: []
+};
+
 const serviceCallOne = {
 	_id: serviceCallOneId,
 	title: 'service call one',
@@ -124,6 +136,7 @@ const seedDb = async () => {
 	await User.deleteMany();
 	await Group.deleteMany();
 	await ServiceCall.deleteMany();
+	await Post.deleteMany();
 
 	await new User({
 		...userOne,
@@ -149,6 +162,8 @@ const seedDb = async () => {
 	await new Group(groupTwo).save();
 
 	await new ServiceCall(serviceCallOne).save();
+
+	await new Post(postOne).save();
 };
 
 const teardownDb = async () => {
@@ -172,5 +187,7 @@ module.exports = {
 	userFourId,
 	groupTwoId,
 	serviceCallOne,
-	serviceCallOneId
+	serviceCallOneId,
+	postOneId,
+	postOne
 };
