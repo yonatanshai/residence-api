@@ -11,7 +11,7 @@ const { check } = require('express-validator');
 // router.use(authenticate);
 
 router.get('/:groupId', authenticate, groupsController.getGroupById);
-router.get('/users/:uid', authenticate, groupsController.getGroupsByUserId);
+router.get('/', authenticate, groupsController.getMyGroups);
 router.post(
 	'/',
 	[check('name').trim().notEmpty()],
