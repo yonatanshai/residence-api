@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const Group = require('../../models/group');
 const User = require('../../models/user');
 const ServiceCall = require('../../models/service-call');
+const Post = require('../../models/post');
+const Comment = require('../../models/comment');
 const { ServiceCallStatus, ServiceCallCategory } = require('../../models/enums/service-calls');
 
 
@@ -15,6 +17,8 @@ const userFourId = new mongoose.Types.ObjectId();
 const groupOneId = new mongoose.Types.ObjectId();
 const groupTwoId = new mongoose.Types.ObjectId();
 const serviceCallOneId = new mongoose.Types.ObjectId();
+const postOneId = new mongoose.Types.ObjectId();
+const commentOneId = new mongoose.Types.ObjectId();
 
 // const ids = [userOneId, userTwoId, userThreeId, userFourId, groupOneId, groupTwoId, serviceCallOneId];
 
@@ -74,6 +78,16 @@ const groupTwo = {
 	members: [userOneId, userThreeId]
 };
 
+const postOne = {
+	_id: postOneId,
+	text: 'post one',
+	creator: userOneId,
+	group: groupOneId,
+	createdAt: new Date(),
+	likes: [userTwoId],
+	comments: []
+};
+
 const serviceCallOne = {
 	_id: serviceCallOneId,
 	title: 'service call one',
@@ -82,6 +96,16 @@ const serviceCallOne = {
 	category: ServiceCallCategory.OTHER,
 	creator: userOneId,
 	group: groupOneId
+};
+
+const commentOne = {
+	_id: commentOneId,
+	text: 'Comment one',
+	creator: userOneId,
+	post: postOne,
+	createdAt: new Date(),
+	likes: [],
+	replies: []
 };
 
 let mongoServer;
@@ -124,6 +148,8 @@ const seedDb = async () => {
 	await User.deleteMany();
 	await Group.deleteMany();
 	await ServiceCall.deleteMany();
+	await Post.deleteMany();
+	await Comment.deleteMany();
 
 	await new User({
 		...userOne,
@@ -149,6 +175,10 @@ const seedDb = async () => {
 	await new Group(groupTwo).save();
 
 	await new ServiceCall(serviceCallOne).save();
+
+	await new Post(postOne).save();
+
+	await new Comment(commentOne).save();
 };
 
 const teardownDb = async () => {
@@ -172,5 +202,8 @@ module.exports = {
 	userFourId,
 	groupTwoId,
 	serviceCallOne,
-	serviceCallOneId
+	serviceCallOneId,
+	postOneId,
+	postOne,
+	commentOneId
 };

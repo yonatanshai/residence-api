@@ -17,6 +17,10 @@ const commentSchema = mongoose.Schema({
 		required: true,
 		ref: 'Post'
 	},
+	createdAt: {
+		type: Date,
+		required: true
+	},
 	likes: [{
 		count: {
 			type: Number,

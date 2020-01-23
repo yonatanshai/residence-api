@@ -16,7 +16,7 @@ const getGroupById = async (req, res) => {
 	return res.json({ group: group.toObject({ getters: true }) });
 };
 
-const getGroupsByUserId = async (req, res) => {
+const getMyGroups = async (req, res) => {
 	const userId = req.userData.userId;
 
 	let userWithGroups;
@@ -250,7 +250,7 @@ const resignAsAdmin = async (req, res) => {
 };
 
 module.exports = {
-	getGroupsByUserId,
+	getMyGroups,
 	createGroup,
 	getGroupById,
 	deleteGroup,

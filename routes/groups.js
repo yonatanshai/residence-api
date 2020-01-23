@@ -11,7 +11,7 @@ const { check } = require('express-validator');
 // router.use(authenticate);
 
 router.get('/:groupId', authenticate, groupsController.getGroupById);
-router.get('/users/:uid', authenticate, groupsController.getGroupsByUserId);
+router.get('/', authenticate, groupsController.getMyGroups);
 router.post(
 	'/',
 	[check('name').trim().notEmpty()],
@@ -27,6 +27,7 @@ router.delete('/:groupId/members/:uid', authorize, groupsController.removeMember
 router.delete('/:groupId/admins/me', authorize, groupsController.resignAsAdmin);
 router.delete('/:groupId', authorize, groupsController.deleteGroup);
 
+// Nested routes
 router.use('/:groupId/posts/', postsRoutes);
 router.use('/:groupId/service-calls', serviceCallRoutes);
 
