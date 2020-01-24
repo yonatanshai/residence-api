@@ -23,7 +23,7 @@ app.use('/groups', groupRoutes);
 app.use('/service-calls', serviceCallsRoutes);
 
 app.use(() => {
-	throw new HttpError('Could not find this route', 404);
+	throw new HttpError('Error: Could not find this route', 404);
 });
 
 app.use((error, req, res) => {
