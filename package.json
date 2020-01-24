@@ -22,7 +22,7 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "node app.js",
     "dev": "env-cmd -f ./config/dev.env nodemon index.js",
     "test": "env-cmd -f ./config/test.env jest --watch --runInBand"
   },

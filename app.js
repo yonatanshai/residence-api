@@ -4,8 +4,10 @@ const HttpError = require('./models/http-error');
 const usersRoutes = require('./routes/users');
 const groupRoutes = require('./routes/groups');
 const serviceCallsRoutes = require('./routes/service-calls.js');
+const mongoose = require('mongoose');
 // require('./db/mongoose');
 
+const port = process.env.PORT || 5000;
 
 const app = express();
 
@@ -31,6 +33,10 @@ app.use((error, req, res) => {
 	res.status(error.code || 500);
 	res.json({ message: error.message || 'An unknown error occurred' });
 });
+
+mongoose.connect(process.env.DB_CONNECTION_STRING)
+	.then(() => app.listen(port, () => console.log(`running on port ${port}`)))
+	.catch((err) => console.log(err));
 
 
 module.exports = app;
