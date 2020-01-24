@@ -21,6 +21,9 @@
     "mongodb-memory-server": "^6.2.0",
     "supertest": "^4.0.2"
   },
+  "engines": {
+    "node": "13.5.0"
+  },
   "scripts": {
     "start": "node app.js",
     "dev": "env-cmd -f ./config/dev.env nodemon index.js",
