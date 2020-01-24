@@ -34,8 +34,9 @@ app.use((error, req, res) => {
 	res.json({ message: error.message || 'An unknown error occurred' });
 });
 
-mongoose.connect(process.env.DB_CONNECTION_STRING)
-	.then(() => app.listen(port, () => console.log(`running on port ${port}`)))
+mongoose
+	.connect('mongodb+srv://yonatans:SNZrBJvmQqOErBb9@cluster0-ngxlm.mongodb.net/ResidenceDev?retryWrites=true&w=majority')
+	.then(() => app.listen(port, () => console.log(`Server listening on port ${port}!`)))
 	.catch((err) => console.log(err));
 
 
