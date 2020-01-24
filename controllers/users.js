@@ -5,6 +5,7 @@ const User = require('../models/user');
 const HttpError = require('../models/http-error');
 
 const getAllUsers = async(req, res, next) => {
+
 	try {
 		const users = await User.find({}, '-password');
 		if (!users) {
